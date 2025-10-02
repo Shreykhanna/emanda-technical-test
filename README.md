@@ -73,12 +73,36 @@ docker-compose up --build
 ```
 
 This starts:
+
 - React frontend on [http://localhost:8080](http://localhost:8080)
 - NestJS backend on [http://localhost:3000](http://localhost:3000) (proxied via NGINX)
 
 ### 2. Add tasks via UI and verify that tasks render correctly.
 
 ---
+
+## Implementation
+
+# Backend
+
+- Current implementation didn't supported multi-level subtasks addition.
+- To support multi-level subtasks addition I did changes in entity and service files.
+- I implemented tree repositories in tasks.entity with @tree decorator using closure-table strategy which is super flexible to query ancestors and their dependants at any level.
+- I also added @TreeParent and @TreeChildren decorators to parent and subtasks columns.
+
+# Frontend
+
+- In TaskContext.ts I created addSubtasks(tasks,parentId) which takes tasks and parentId as an argument which calles createTasks() to pass the data to the backend.
+- In TaskItem.tsx component, I created an input field which takes subtasks as input whihch is stored in subtasksInput using a useState() hook.
+- Add subtasks button is created which calls addSubtasks() method and sends subtasks to the backend by calling /api/tasks route
+
+---
+
+# RoadMap for improvements
+
+- I will add unit tests for backend apis and storybook tests for the frontend components to ensure any future changes done in the code doesn't break the existing changes and all the functions should work they are intended to work.
+- I will add styling to the exisiting components to make the web app mobile responsive and user friendly.
+- I will create a centralized theme file to store all design tokens, such as colors, backgrounds, and typography, making it easier to update styles consistently across the application.
 
 ## Submission
 
@@ -96,4 +120,3 @@ When you're done, please submit:
 ## Questions?
 
 Feel free to clarify anything by reaching out to the team.
-
