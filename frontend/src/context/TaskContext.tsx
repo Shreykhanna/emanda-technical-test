@@ -1,15 +1,18 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Task } from '../types';
-import { fetchTasks, createTask } from '../api';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { Task } from "../types";
+import { fetchTasks, createTask } from "../api";
 
 interface TaskContextType {
   tasks: Task[];
   addTask: (title: string, parentId?: number) => void;
+  addSubtasks: (title: string, parentId: number) => void;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
-export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}: React.ReactNode) => {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   useEffect(() => {
@@ -21,11 +24,20 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     fetchTasks().then(setTasks);
   };
 
-  return <TaskContext.Provider value={{ tasks, addTask }}>{children}</TaskContext.Provider>;
+  const addSubtasks = async (title: string, parentId: number) => {
+    const newsubTask = await createTask(title, parentId);
+    fetchTasks().then(setTasks);
+  };
+
+  return (
+    <TaskContext.Provider value={{ tasks, addTask, addSubtasks }}>
+      {children}
+    </TaskContext.Provider>
+  );
 };
 
 export const useTasks = (): TaskContextType => {
   const context = useContext(TaskContext);
-  if (!context) throw new Error('useTasks must be used within TaskProvider');
+  if (!context) throw new Error("useTasks must be used within TaskProvider");
   return context;
 };
